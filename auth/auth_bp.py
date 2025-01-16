@@ -5,7 +5,7 @@ from flasgger import swag_from
 
 auth_bp = Blueprint('auth_bp', __name__)  # Declare this as a blueprint
 
-# API route to create a user
+# API route to create a user, TO BE USED IN TESTING ONLY, NOT REQUIRED BY THE FRONTEND as when the user is created via clerk it automatically goes in the db we have
 @auth_bp.route('/create-user', methods=['POST'])
 @swag_from({
     'responses': {
@@ -31,9 +31,9 @@ auth_bp = Blueprint('auth_bp', __name__)  # Declare this as a blueprint
                     'last_name': {'type': 'string'},
                     'email': {'type': 'string'},
                     'role': {'type': 'string', 'enum': ['PATIENT', 'DOCTOR']},
-                    'clerkid': {'type': 'string'}  # Add clerkid here
+                    'clerkid': {'type': 'string'}  
                 },
-                'required': ['id', 'first_name', 'email', 'role', 'clerkid']  # clerkid is now required
+                'required': ['id', 'first_name', 'email', 'role', 'clerkid']  
             }
         }
     ]
@@ -45,7 +45,7 @@ def create_user():
     last_name = data.get('last_name')
     email = data.get('email')
     role = data.get('role')
-    clerkid = data.get('clerkid')  # Get clerkid from the request
+    clerkid = data.get('clerkid')  
 
     # Just an error if API Endpoint is hit incorrectly with missing data
     if not id or not first_name or not email or not role or not clerkid:

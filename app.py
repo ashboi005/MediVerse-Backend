@@ -5,11 +5,11 @@ from auth.auth_bp import auth_bp
 from user.user_bp import user_bp
 
 app = Flask(__name__)
-configure_app(app)
-CORS(app)
+configure_app(app)   #this fucntion is defined in config.py and sets up the flask app,db,swagger and flask migrate
+CORS(app) #cross origin resource sharing, enables flask backend to be accessed by the frontend
 
-app.register_blueprint(auth_bp, url_prefix="/auth")
-app.register_blueprint(user_bp, url_prefix="/user")
+app.register_blueprint(auth_bp, url_prefix="/auth") #registering auth blueprint
+app.register_blueprint(user_bp, url_prefix="/user") #registering user blueprint
 
 #Default Route
 @app.route('/')

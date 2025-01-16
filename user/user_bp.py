@@ -86,7 +86,7 @@ def create_user_details():
     user_id = data.get('user_id')
 
     # Find the user in the User table using the clerkid
-    user = User.query.filter_by(clerkid=user_id).first()  # Querying based on clerkid (not id)
+    user = User.query.filter_by(clerkid=user_id).first()  
     if not user:
         return jsonify({"error": "User not found"}), 400
 

@@ -8,8 +8,8 @@ class User(db.Model):
     email = db.Column(db.String(120), nullable=False, unique=True)
     first_name = db.Column(db.String(80), nullable=False)
     last_name = db.Column(db.String(80), nullable=False)
-    createdat = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())  # Changed to createdat
-    updatedat = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())  # Changed to updatedat
+    createdat = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp()) 
+    updatedat = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp()) 
     role = db.Column(db.Enum('PATIENT', 'DOCTOR', name='role_enum'), nullable=False, default='PATIENT')
 
     user_details = db.relationship('UserDetails', back_populates='user', uselist=False)
@@ -18,7 +18,7 @@ class UserDetails(db.Model):
     __tablename__ = 'user_details'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.String(36), db.ForeignKey('User.id'), nullable=False)  # Correct ForeignKey to reference 'User.id'
+    user_id = db.Column(db.String(36), db.ForeignKey('User.id'), nullable=False)  
     first_name = db.Column(db.String(80), nullable=False)
     last_name = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), nullable=False)
