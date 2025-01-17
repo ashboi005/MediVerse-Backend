@@ -18,6 +18,8 @@ def convert_to_date(date_string):
 # API route to create user details when a new user logs in for the first time
 @user_bp.route('/create-details', methods=['POST'])
 @swag_from({
+    'summary': 'For a new user,allows for them to enter their details',
+    'tags': ['User Details'],
     'responses': {
         201: {
             'description': 'User details created successfully',
@@ -36,7 +38,7 @@ def convert_to_date(date_string):
             'schema': {
                 'type': 'object',
                 'properties': {
-                    'user_id': {'type': 'string'},
+                    'clerkid': {'type': 'string'},
                     'first_name': {'type': 'string'},
                     'last_name': {'type': 'string'},
                     'email': {'type': 'string'},
@@ -69,7 +71,7 @@ def convert_to_date(date_string):
                     'insurance_validity': {'type': 'string', 'format': 'date'},
                     'mental_health_conditions': {'type': 'string'}
                 },
-                'required': ['user_id', 'first_name', 'last_name', 'email', 'phone_number', 'date_of_birth', 'gender', 'age', 'address', 'blood_group']
+                'required': ['clerkid', 'first_name', 'last_name', 'email', 'phone_number', 'date_of_birth', 'gender', 'age', 'address', 'blood_group']
             }
         }
     ]
@@ -83,16 +85,16 @@ def create_user_details():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 
-    user_id = data.get('user_id')
+    clerkid = data.get('clerkid')
 
     # Find the user in the User table using the clerkid
-    user = User.query.filter_by(clerkid=user_id).first()  
+    user = User.query.filter_by(clerkid=clerkid).first()
     if not user:
         return jsonify({"error": "User not found"}), 400
 
     # Create new user details
     user_details = UserDetails(
-        user_id=user_id,
+        clerkid=user.clerkid,  # Use the primary key (id) from the User table
         first_name=data.get('first_name'),
         last_name=data.get('last_name'),
         email=data.get('email'),
@@ -132,14 +134,16 @@ def create_user_details():
     return jsonify({"message": "User details created successfully"}), 201
 
 # API route to get user details
-@user_bp.route('/get-details/<user_id>', methods=['GET'])
+@user_bp.route('/get-details/<clerkid>', methods=['GET'])
 @swag_from({
+    'summary': 'Fethces the User Details by his ClerkID',
+    'tags': ['User Details'],
     'responses': {
         200: {
             'description': 'User details fetched successfully',
             'examples': {
                 'application/json': {
-                    'user_id': '1234',
+                    'clerkid': '1234',
                     'first_name': 'John',
                     'last_name': 'Doe',
                     'email': 'john.doe@example.com',
@@ -156,14 +160,18 @@ def create_user_details():
         }
     }
 })
-def get_user_details(user_id):
-    user_details = UserDetails.query.filter_by(user_id=user_id).first()
-
-    if not user_details:
+def get_user_details(clerkid):
+    user = User.query.filter_by(clerkid=clerkid).first()
+    if not user:
         return jsonify({"error": "User not found"}), 400
 
+    user_details = UserDetails.query.filter_by(clerkid=user.clerkid).first()
+
+    if not user_details:
+        return jsonify({"error": "User details not found"}), 400
+
     return jsonify({
-        'user_id': user_details.user_id,
+        'clerkid': user.clerkid,
         'first_name': user_details.first_name,
         'last_name': user_details.last_name,
         'email': user_details.email,
@@ -196,8 +204,10 @@ def get_user_details(user_id):
     }), 200
 
 # API route to update user details
-@user_bp.route('/update-details/<user_id>', methods=['PATCH'])
+@user_bp.route('/update-details/<clerkid>', methods=['PATCH'])
 @swag_from({
+    'summary': 'Updates the User Details by his ClerkID',
+    'tags': ['User Details'],
     'responses': {
         200: {
             'description': 'User details updated successfully',
@@ -209,13 +219,18 @@ def get_user_details(user_id):
         }
     }
 })
-def update_user_details(user_id):
+def update_user_details(clerkid):
     data = request.json  # Get the JSON data sent by the client
 
-    # Find the user details by user_id
-    user_details = UserDetails.query.filter_by(user_id=user_id).first()
-    if not user_details:
+    # Find the user by clerkid
+    user = User.query.filter_by(clerkid=clerkid).first()
+    if not user:
         return jsonify({"error": "User not found"}), 400
+
+    # Find the user details by user_id (linked to clerkid)
+    user_details = UserDetails.query.filter_by(clerkid=user.clerkid).first()
+    if not user_details:
+        return jsonify({"error": "User details not found"}), 400
 
     # Update fields with provided data (checking for every field in the UserDetails table)
     if 'first_name' in data:

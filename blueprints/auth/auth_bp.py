@@ -8,6 +8,8 @@ auth_bp = Blueprint('auth_bp', __name__)  # Declare this as a blueprint
 # API route to create a user, TO BE USED IN TESTING ONLY, NOT REQUIRED BY THE FRONTEND as when the user is created via clerk it automatically goes in the db we have
 @auth_bp.route('/create-user', methods=['POST'])
 @swag_from({
+    'summary': 'Creates a User, only for testing not needed by the frontend',
+    'tags': ['Auth'],
     'responses': {
         201: {
             'description': 'User registered successfully',
@@ -15,7 +17,7 @@ auth_bp = Blueprint('auth_bp', __name__)  # Declare this as a blueprint
         },
         400: {
             'description': 'Validation error',
-            'examples': {'application/json': {'error': 'ID, first name, email, and role are required, and role must be either "patient" or "doctor"'}}
+            'examples': {'application/json': {'error': 'User already exists or validation error'}}
         }
     },
     'parameters': [
@@ -31,9 +33,9 @@ auth_bp = Blueprint('auth_bp', __name__)  # Declare this as a blueprint
                     'last_name': {'type': 'string'},
                     'email': {'type': 'string'},
                     'role': {'type': 'string', 'enum': ['PATIENT', 'DOCTOR']},
-                    'clerkid': {'type': 'string'}  
+                    'clerkid': {'type': 'string'}
                 },
-                'required': ['id', 'first_name', 'email', 'role', 'clerkid']  
+                'required': ['id', 'first_name', 'email', 'role', 'clerkid']
             }
         }
     ]
@@ -45,9 +47,9 @@ def create_user():
     last_name = data.get('last_name')
     email = data.get('email')
     role = data.get('role')
-    clerkid = data.get('clerkid')  
+    clerkid = data.get('clerkid')
 
-    # Just an error if API Endpoint is hit incorrectly with missing data
+    # Ensure all required fields are present
     if not id or not first_name or not email or not role or not clerkid:
         return jsonify({"error": "ID, first name, email, role, and clerkid are required, and role must be either 'PATIENT' or 'DOCTOR'"}), 400
 
@@ -55,14 +57,22 @@ def create_user():
     if role not in ['PATIENT', 'DOCTOR']:
         return jsonify({"error": "Role must be either 'PATIENT' or 'DOCTOR'"}), 400
 
-    # Checks if user already exists, because we only want to save newly created users
+    # Check if a user with the same email already exists
+    existing_email_user = User.query.filter_by(email=email).first()
+    if existing_email_user:
+        return jsonify({"error": f"User with email '{email}' already exists."}), 400
+
+    # Check if a user with the same ID already exists
     existing_user = User.query.filter_by(id=id).first()
     if existing_user:
-        return jsonify({"error": "User already exists"}), 400
+        return jsonify({"error": f"User with ID '{id}' already exists."}), 400
 
-    # Create new user
+    # Create and save the new user
     user = User(id=id, first_name=first_name, last_name=last_name, email=email, role=role, clerkid=clerkid)
-    db.session.add(user)
-    db.session.commit()
-
-    return jsonify({"message": "User registered successfully"}), 201
+    try:
+        db.session.add(user)
+        db.session.commit()
+        return jsonify({"message": "User registered successfully"}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": f"Failed to register user: {str(e)}"}), 500
