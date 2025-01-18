@@ -14,7 +14,7 @@ ai_bp = Blueprint('ai_bp', __name__)
     'responses': {
         200: {
             'description': 'Text extracted and summarized successfully',
-            'examples': {'application/json': {'extracted_text': 'Sample extracted text', 'summarized_text': 'Summarized result here'}}
+            'examples': {'application/json': {'summarized_text': 'Summarized result here'}}
         },
         400: {
             'description': 'File upload error or unsupported format',
@@ -37,28 +37,31 @@ def upload_and_process():
     # Summarize or analyze the extracted text using Gemini API
     summarized_text = summarize_text(text)
 
-    # Get clerkid from form-data
+    # Get clerkid and file_url from form-data
     clerkid = request.form.get('clerkid')  # Use request.form for form-data
+    file_url = request.form.get('file_url')
     if not clerkid:
         return jsonify({"error": "Clerk ID is missing from the request"}), 400
+    if not file_url:
+        return jsonify({"error": "File URL is missing from the request"}), 400
 
     # Query the User table to find the user based on clerkid
     user = User.query.filter_by(clerkid=clerkid).first()
     if not user:
         return jsonify({"error": "User not found"}), 400
 
-    # Save extracted and summarized text to the database
+    # Save summarized text and file URL to the database
     text_report = TextReport(
         clerkid=clerkid,
-        extracted_text=text,
-        summarized_text=summarized_text
+        summarized_text=summarized_text,
+        file_url=file_url
     )
 
     db.session.add(text_report)
     db.session.commit()
 
-    # Return both extracted and summarized text
-    return jsonify({"extracted_text": text, "summarized_text": summarized_text}), 200
+    # Return summarized text
+    return jsonify({"summarized_text": summarized_text}), 200
 
 
 @ai_bp.route('/get-reports/<clerkid>', methods=['GET'])
@@ -82,7 +85,7 @@ def upload_and_process():
                     'example': {
                         'reports': [
                             {
-                                'extracted_text': 'This is a sample extracted text',
+                                'file_url': 'http://example.com/file.pdf',
                                 'summarized_text': 'This is a sample summary',
                                 'created_at': '2025-01-17T18:30:00'
                             }
@@ -115,7 +118,7 @@ def get_reports(clerkid):
     # Format the reports for the response
     response_data = [
         {
-            'extracted_text': report.extracted_text,
+            'file_url': report.file_url,
             'summarized_text': report.summarized_text,
             'created_at': report.created_at.isoformat()
         }

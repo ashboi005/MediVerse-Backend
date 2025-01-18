@@ -74,7 +74,7 @@ class TextReport(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     clerkid = db.Column(db.String(36), db.ForeignKey('User.clerkid'), nullable=False)  # Linking to User.clerkid
-    extracted_text = db.Column(db.Text, nullable=False)  # Extracted text from the uploaded file
+    file_url = db.Column(db.String(255), nullable=False)  # URL of the uploaded file
     summarized_text = db.Column(db.Text, nullable=False)  # Summarized text (AI processed)
     created_at = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
 
