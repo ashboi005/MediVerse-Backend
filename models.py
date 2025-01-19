@@ -14,7 +14,7 @@ class User(db.Model):
 
     user_details = db.relationship('UserDetails', back_populates='user', uselist=False, foreign_keys='UserDetails.clerkid')
     text_reports = db.relationship('TextReport', back_populates='user', foreign_keys='TextReport.clerkid')
-
+    doctor_details = db.relationship('DoctorDetails', back_populates='user', uselist=False, foreign_keys='DoctorDetails.clerkid')
 
 class UserDetails(db.Model):
     __tablename__ = 'user_details'
@@ -79,3 +79,23 @@ class TextReport(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
 
     user = db.relationship('User', back_populates="text_reports")  # Relationship with User model
+
+class DoctorDetails(db.Model):
+    __tablename__ = 'doctor_details'
+
+    id = db.Column(db.Integer, primary_key=True)
+    clerkid = db.Column(db.String(36), db.ForeignKey('User.clerkid'), nullable=False)  # Linking to User.clerkid
+    first_name = db.Column(db.String(80), nullable=False)
+    last_name = db.Column(db.String(80), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    phone_number = db.Column(db.String(20), nullable=False)
+    address = db.Column(db.String(255), nullable=True)
+    specialization = db.Column(db.String(100), nullable=False)
+    years_of_experience = db.Column(db.Integer, nullable=False)
+    department = db.Column(db.String(100), nullable=True)
+    clinic_address = db.Column(db.String(255), nullable=True)
+    consultation_fee = db.Column(db.Float, nullable=False)
+    available_days = db.Column(db.String(50), nullable=False)
+    available_time = db.Column(db.String(50), nullable=False)
+
+    user = db.relationship('User', back_populates='doctor_details')  # Relationship with User model
