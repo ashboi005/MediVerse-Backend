@@ -15,6 +15,7 @@ class User(db.Model):
     user_details = db.relationship('UserDetails', back_populates='user', uselist=False, foreign_keys='UserDetails.clerkid')
     text_reports = db.relationship('TextReport', back_populates='user', foreign_keys='TextReport.clerkid')
     doctor_details = db.relationship('DoctorDetails', back_populates='user', uselist=False, foreign_keys='DoctorDetails.clerkid')
+    routine = db.relationship('Routine', back_populates='user', uselist=False, foreign_keys='Routine.clerkid')
 
 class UserDetails(db.Model):
     __tablename__ = 'user_details'
@@ -99,3 +100,36 @@ class DoctorDetails(db.Model):
     available_time = db.Column(db.String(50), nullable=False)
 
     user = db.relationship('User', back_populates='doctor_details')  # Relationship with User model
+
+class Prescription(db.Model):
+    __tablename__ = 'prescriptions'
+
+    id = db.Column(db.Integer, primary_key=True)
+    doctor_clerkid = db.Column(db.String(36), db.ForeignKey('User.clerkid'), nullable=False)  # Linking to Doctor's clerkid
+    patient_clerkid = db.Column(db.String(36), db.ForeignKey('User.clerkid'), nullable=False)  # Linking to Patient's clerkid
+    prescription_date = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
+    prescription_text = db.Column(db.Text, nullable=False)
+
+    doctor = db.relationship('User', foreign_keys=[doctor_clerkid])
+    patient = db.relationship('User', foreign_keys=[patient_clerkid])
+    
+class Appointment(db.Model):
+    __tablename__ = 'appointments'
+
+    id = db.Column(db.Integer, primary_key=True)
+    doctor_clerkid = db.Column(db.String(36), db.ForeignKey('User.clerkid'), nullable=False)  # Linking to Doctor's clerkid
+    patient_clerkid = db.Column(db.String(36), db.ForeignKey('User.clerkid'), nullable=False)  # Linking to Patient's clerkid
+    appointment_date = db.Column(db.DateTime, nullable=False)
+    status = db.Column(db.String(15), nullable=False)
+    text_field = db.Column(db.Text, nullable=True)
+
+class Routine (db.Model):
+    __tablename__ = 'routines'
+
+    id = db.Column(db.Integer, primary_key=True)
+    goal = db.Column(db.String(100), nullable=False)
+    clerkid = db.Column(db.String(36), db.ForeignKey('User.clerkid'), nullable=False)  # Linking to User's clerkid
+    routine = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
+
+    user = db.relationship('User', back_populates='routine')  # Relationship with User model

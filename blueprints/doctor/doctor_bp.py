@@ -321,13 +321,13 @@ def get_all_doctors():
     doctor_details_list = DoctorDetails.query.all()
     doctors = []
     for doctor_details in doctor_details_list:
-        user = User.query.filter_by(clerkid=doctor_details.clerkid).first()
-    if user and user.role == 'DOCTOR':
-        doctors.append({
-            'clerkid': doctor_details.clerkid,
-            'first_name': doctor_details.first_name,
-            'last_name': doctor_details.last_name,
-            'specialization': doctor_details.specialization,
-        })
+        user = User.query.filter_by(clerkid=doctor_details.clerkid, role='DOCTOR').first()
+        if user:
+            doctors.append({
+                'clerkid': doctor_details.clerkid,
+                'first_name': doctor_details.first_name,
+                'last_name': doctor_details.last_name,
+                'specialization': doctor_details.specialization,
+            })
     return jsonify(doctors), 200
 
