@@ -269,11 +269,13 @@ def update_doctor_details(clerkid):
             'examples': {
                 'application/json': [
                     {
+                        'clerkid': '1234',
                         'name': 'John Doe',
                         'phone_number': '9876543210',
                         'email': 'john.doe@example.com'
                     },
                     {
+                        'clerkid': '5678',
                         'name': 'Jane Smith',
                         'phone_number': '1234567890',
                         'email': 'jane.smith@example.com'
@@ -290,6 +292,7 @@ def get_all_users():
         user = User.query.filter_by(clerkid=user_details.clerkid).first()
         if user:
             users.append({
+                'clerkid': user.clerkid,
                 'name': f"{user_details.first_name} {user_details.last_name}",
                 'phone_number': user_details.phone_number,
                 'email': user_details.email
