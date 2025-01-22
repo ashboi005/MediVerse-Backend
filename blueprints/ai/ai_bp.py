@@ -141,22 +141,63 @@ HEALTH_KEYWORDS = [
 @swag_from({
     'summary': 'Generate a 10-day health-related routine',
     'tags': ['Routine'],
-    'parameters': [
-        {
-            'name': 'body',
-            'in': 'body',
-            'required': True,
-            'description': 'JSON payload containing the goal and clerkid',
-            'schema': {
-                'type': 'object',
-                'properties': {
-                    'goal': {'type': 'string'},
-                    'clerkid': {'type': 'string'}
+    'requestBody': {
+        'required': True,
+        'content': {
+            'application/json': {
+                'schema': {
+                    'type': 'object',
+                    'properties': {
+                        'goal': {
+                            'type': 'string',
+                            'description': 'The health-related goal for the routine generation'
+                        },
+                        'clerkid': {
+                            'type': 'string',
+                            'description': 'The unique clerk ID of the user'
+                        }
+                    },
+                    'required': ['goal', 'clerkid']
                 },
-                'required': ['goal', 'clerkid']
+                'example': {
+                    'goal': 'lose weight through healthy eating and exercise',
+                    'clerkid': '12345'
+                }
             }
         }
-    ],
+    },
+    'responses': {
+        200: {
+            'description': 'Routine generated successfully',
+            'content': {
+                'application/json': {
+                    'example': {
+                        'routine': 'Day 1: Morning Yoga for 30 minutes...'
+                    }
+                }
+            }
+        },
+        400: {
+            'description': 'Validation error or unsupported goal',
+            'content': {
+                'application/json': {
+                    'example': {
+                        'error': 'Only health-related topics are supported for routine generation.'
+                    }
+                }
+            }
+        },
+        500: {
+            'description': 'Error during routine generation',
+            'content': {
+                'application/json': {
+                    'example': {
+                        'error': 'An error occurred during routine generation: <error-message>'
+                    }
+                }
+            }
+        }
+    }
 })
 def generate_routine():
     data = request.json  # Get JSON data from the request
