@@ -1,3 +1,5 @@
+###BACKEND DEPLOYED ON https://mediverse-backend.onrender.com
+
 ### MediVerse: Revolutionizing Healthcare Communication
 
 Healthcare systems often struggle to streamline communication between patients and doctors. To address this challenge, our team, Cracked Nerds, developed MediVerse—a comprehensive Patient-Doctor communication system. Submitted for the BITS PILANI POSTMAN API Hackathon 4.0, this application is designed to simplify healthcare interactions through robust APIs and AI-powered features. Built with Flask for the backend and Next.js for the frontend, MediVerse ensures seamless and efficient user experiences.
