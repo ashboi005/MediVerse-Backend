@@ -7,7 +7,7 @@ Healthcare systems often struggle to streamline communication between patients a
 ### **Team Members**
 
 - **Ashwath Soni (me)**
-- **Sahil Chabra **
+- **Sahil Chabra**
 - **Gurshabad Singh**
 - **Parth Kapoor**
 
