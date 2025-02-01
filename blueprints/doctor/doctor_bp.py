@@ -1,7 +1,8 @@
 from flask import Blueprint, request, jsonify
 from flasgger import swag_from
 from config import db
-from models import User,UserDetails, DoctorDetails
+from models import User, UserDetails, DoctorDetails
+from blueprints.hospital.models import Hospital # Import Hospital model
 from datetime import datetime
 
 doctor_bp = Blueprint('doctor_bp', __name__)
@@ -76,7 +77,8 @@ def create_doctor(clerkid):
                     'clinic_address': {'type': 'string'},
                     'consultation_fee': {'type': 'number'},
                     'available_days': {'type': 'string'},
-                    'available_time': {'type': 'string'}
+                    'available_time': {'type': 'string'},
+                    'hospital_id': {'type': 'integer'}  # Added hospital_id
                 },
                 'required': [
                     'clerkid', 'first_name', 'last_name', 'email', 'phone_number', 'address',
@@ -108,7 +110,8 @@ def post_doctor_details():
         clinic_address=data.get('clinic_address'),
         consultation_fee=data.get('consultation_fee'),
         available_days=data.get('available_days'),
-        available_time=data.get('available_time')
+        available_time=data.get('available_time'),
+        hospital_id=data.get('hospital_id')  # Include hospital_id
     )
 
     db.session.add(doctor_details)
@@ -121,14 +124,25 @@ def post_doctor_details():
 @swag_from({
     'summary': 'Fetches the Doctor Details by ClerkID',
     'tags': ['Doctor Details'],
+    'parameters': [
+        {
+            'name': 'clerkid',
+            'in': 'path',
+            'type': 'string',
+            'required': True,
+            'description': 'ClerkID of the doctor'
+        }
+    ],
     'responses': {
         200: {
             'description': 'Doctor details fetched successfully',
             'examples': {
                 'application/json': {
                     'clerkid': '1234',
-                    'name': 'Dr. John Doe',
+                    'first_name': 'John',
+                    'last_name': 'Doe',
                     'phone_number': '9876543210',
+                    'email': 'john.doe@example.com',
                     'address': '123 Main St, Springfield, IL',
                     'years_of_experience': 10,
                     'specialization': 'Cardiology',
@@ -136,7 +150,9 @@ def post_doctor_details():
                     'clinic_address': '456 Clinic St, Springfield, IL',
                     'consultation_fee': 100,
                     'available_days': 'Mon-Fri',
-                    'available_time': '09:00-17:00'
+                    'available_time': '09:00-17:00',
+                    'hospital_id': 1,  # Added hospital_id
+                    'hospital_name': 'General Hospital'  # Added hospital_name
                 }
             }
         },
@@ -151,26 +167,39 @@ def get_doctor_details(clerkid):
     if not user or user.role != 'DOCTOR':
         return jsonify({"error": "Doctor not found"}), 400
 
-    doctor_details = DoctorDetails.query.filter_by(clerkid=user.clerkid).first()
+    # Join DoctorDetails and Hospital tables to fetch hospital name
+    doctor_details = (
+        db.session.query(DoctorDetails, Hospital.name)
+        .join(Hospital, DoctorDetails.hospital_id == Hospital.id, isouter=True)
+        .filter(DoctorDetails.clerkid == user.clerkid)
+        .first()
+    )
+
     if not doctor_details:
         return jsonify({"error": "Doctor details not found"}), 400
 
+    # Unpack the result
+    doctor, hospital_name = doctor_details
+
     return jsonify({
         'clerkid': user.clerkid,
-        'first_name': doctor_details.first_name,
-        'last_name': doctor_details.last_name,
-        'phone_number': doctor_details.phone_number,
-        'email': doctor_details.email,
-        'address': doctor_details.address,
-        'years_of_experience': doctor_details.years_of_experience,
-        'specialization': doctor_details.specialization,
-        'department': doctor_details.department,
-        'clinic_address': doctor_details.clinic_address,
-        'consultation_fee': doctor_details.consultation_fee,
-        'available_days': doctor_details.available_days,
-        'available_time': doctor_details.available_time
+        'first_name': doctor.first_name,
+        'last_name': doctor.last_name,
+        'phone_number': doctor.phone_number,
+        'email': doctor.email,
+        'address': doctor.address,
+        'years_of_experience': doctor.years_of_experience,
+        'specialization': doctor.specialization,
+        'department': doctor.department,
+        'clinic_address': doctor.clinic_address,
+        'consultation_fee': doctor.consultation_fee,
+        'available_days': doctor.available_days,
+        'available_time': doctor.available_time,
+        'hospital_id': doctor.hospital_id,  # Include hospital_id
+        'hospital_name': hospital_name  # Include hospital_name
     }), 200
 
+    
 # Route to update doctor details
 @doctor_bp.route('/update-details/<clerkid>', methods=['PATCH'])
 @swag_from({
@@ -202,7 +231,8 @@ def get_doctor_details(clerkid):
                     'clinic_address': {'type': 'string'},
                     'consultation_fee': {'type': 'number'},
                     'available_days': {'type': 'string'},
-                    'available_time': {'type': 'string'}
+                    'available_time': {'type': 'string'},
+                    'hospital_id': {'type': 'integer'}  # Added hospital_id
                 }
             }
         }
@@ -253,6 +283,8 @@ def update_doctor_details(clerkid):
         doctor_details.available_days = data['available_days']
     if 'available_time' in data:
         doctor_details.available_time = data['available_time']
+    if 'hospital_id' in data:
+        doctor_details.hospital_id = data['hospital_id']  # Update hospital_id
 
     db.session.commit()
 
@@ -299,26 +331,28 @@ def get_all_users():
             })
     return jsonify(users), 200
 
- # Route to get all doctors
+# Route to get all doctors
 @doctor_bp.route('/get-all-doctors', methods=['GET'])
 @swag_from({
-'summary': 'Fetches all doctors',
-'tags': ['Doctor'],
-'responses': {
-200: {
-    'description': 'Doctors fetched successfully',
-    'examples': {
-        'application/json': [
-            {
-                'clerkid': '1234',
-                'first_name': 'John',
-                'last_name': 'Doe',
-                'specialization': 'Cardiology',
+    'summary': 'Fetches all doctors',
+    'tags': ['Doctor'],
+    'responses': {
+        200: {
+            'description': 'Doctors fetched successfully',
+            'examples': {
+                'application/json': [
+                    {
+                        'clerkid': '1234',
+                        'first_name': 'John',
+                        'last_name': 'Doe',
+                        'specialization': 'Cardiology',
+                        'hospital_id': 1,  # Added hospital_id
+                        'hospital_name': 'General Hospital'  # Added hospital_name
+                    }
+                ]
             }
-        ]
+        }
     }
-}
-}
 })
 def get_all_doctors():
     doctor_details_list = DoctorDetails.query.all()
@@ -326,11 +360,13 @@ def get_all_doctors():
     for doctor_details in doctor_details_list:
         user = User.query.filter_by(clerkid=doctor_details.clerkid, role='DOCTOR').first()
         if user:
+            hospital = Hospital.query.get(doctor_details.hospital_id)  # Fetch hospital details
             doctors.append({
                 'clerkid': doctor_details.clerkid,
                 'first_name': doctor_details.first_name,
                 'last_name': doctor_details.last_name,
                 'specialization': doctor_details.specialization,
+                'hospital_id': doctor_details.hospital_id,  # Include hospital_id
+                'hospital_name': hospital.name if hospital else None  # Include hospital_name
             })
     return jsonify(doctors), 200
-

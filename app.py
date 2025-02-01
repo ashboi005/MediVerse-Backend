@@ -9,7 +9,9 @@ from blueprints.meeting.meeting_bp import meeting_bp
 from blueprints.doctor.doctor_bp import doctor_bp
 from blueprints.prescription.prescription_bp import prescription_bp
 from blueprints.appointment.appointment_bp import appointment_bp
+from blueprints.hospital.hospital_bp import hospital_bp
 from models import Appointment
+from blueprints.hospital.models import Hospital
 from datetime import datetime
 
 app = Flask(__name__)
@@ -23,6 +25,7 @@ app.register_blueprint(meeting_bp, url_prefix='/meeting')
 app.register_blueprint(doctor_bp, url_prefix='/doctor')
 app.register_blueprint(prescription_bp, url_prefix='/prescription')
 app.register_blueprint(appointment_bp, url_prefix='/appointment')
+app.register_blueprint(hospital_bp,url_prefix='/hospital')
 
 # APScheduler setup
 scheduler = APScheduler()

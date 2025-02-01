@@ -3,6 +3,7 @@ from flasgger import swag_from
 from flask_apscheduler import APScheduler
 from config import db
 from models import Appointment, User
+from blueprints.hospital.models import Hospital # Import Hospital model
 from datetime import datetime
 
 appointment_bp = Blueprint('appointment_bp', __name__)
@@ -23,7 +24,8 @@ appointment_bp = Blueprint('appointment_bp', __name__)
                     'doctor_clerkid': {'type': 'string'},
                     'patient_clerkid': {'type': 'string'},
                     'appointment_date': {'type': 'string', 'format': 'date-time'},
-                    'text_field': {'type': 'string'}
+                    'text_field': {'type': 'string'},
+                    'hospital_id': {'type': 'integer'}  # Added hospital_id
                 },
                 'required': ['doctor_clerkid', 'patient_clerkid', 'appointment_date']
             }
@@ -47,6 +49,7 @@ def add_appointment():
     patient_clerkid = data.get('patient_clerkid')
     appointment_date = data.get('appointment_date')
     text_field = data.get('text_field')
+    hospital_id = data.get('hospital_id')  # Get hospital_id from request
 
     doctor = User.query.filter_by(clerkid=doctor_clerkid).first()
     patient = User.query.filter_by(clerkid=patient_clerkid).first()
@@ -61,7 +64,8 @@ def add_appointment():
         patient_clerkid=patient_clerkid,
         appointment_date=datetime.fromisoformat(appointment_date),
         status='approved',
-        text_field=text_field
+        text_field=text_field,
+        hospital_id=hospital_id  # Include hospital_id in the appointment
     )
 
     db.session.add(appointment)
@@ -85,7 +89,8 @@ def add_appointment():
                     'doctor_clerkid': {'type': 'string'},
                     'patient_clerkid': {'type': 'string'},
                     'appointment_date': {'type': 'string', 'format': 'date-time'},
-                    'text_field': {'type': 'string'}
+                    'text_field': {'type': 'string'},
+                    'hospital_id': {'type': 'integer'}  # Added hospital_id
                 },
                 'required': ['doctor_clerkid', 'patient_clerkid', 'appointment_date']
             }
@@ -109,6 +114,7 @@ def request_appointment():
     patient_clerkid = data.get('patient_clerkid')
     appointment_date = data.get('appointment_date')
     text_field = data.get('text_field')
+    hospital_id = data.get('hospital_id')  # Get hospital_id from request
 
     doctor = User.query.filter_by(clerkid=doctor_clerkid).first()
     patient = User.query.filter_by(clerkid=patient_clerkid).first()
@@ -123,7 +129,8 @@ def request_appointment():
         patient_clerkid=patient_clerkid,
         appointment_date=datetime.fromisoformat(appointment_date),
         status='pending',
-        text_field=text_field
+        text_field=text_field,
+        hospital_id=hospital_id  # Include hospital_id in the appointment
     )
 
     db.session.add(appointment)
@@ -212,7 +219,9 @@ def update_appointment_status(id):
                         'patient_clerkid': '5678',
                         'appointment_date': '2023-10-01T12:00:00',
                         'status': 'approved',
-                        'text_field': 'Follow-up appointment'
+                        'text_field': 'Follow-up appointment',
+                        'hospital_id': 1,  # Added hospital_id
+                        'hospital_name': 'General Hospital'  # Added hospital_name
                     }
                 ]
             }
@@ -233,18 +242,18 @@ def get_appointments(clerkid):
     else:
         appointments = Appointment.query.filter_by(patient_clerkid=clerkid).all()
 
-    appointment_list = [
-        {
+    appointment_list = []
+    for appointment in appointments:
+        hospital = Hospital.query.get(appointment.hospital_id)  # Fetch hospital details
+        appointment_list.append({
             'id': appointment.id,
             'doctor_clerkid': appointment.doctor_clerkid,
             'patient_clerkid': appointment.patient_clerkid,
             'appointment_date': appointment.appointment_date.isoformat(),
             'status': appointment.status,
-            'text_field': appointment.text_field
-        }
-        for appointment in appointments
-    ]
+            'text_field': appointment.text_field,
+            'hospital_id': appointment.hospital_id,  # Include hospital_id
+            'hospital_name': hospital.name if hospital else None  # Include hospital_name
+        })
 
     return jsonify(appointment_list), 200
-
-

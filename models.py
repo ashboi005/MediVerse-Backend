@@ -85,7 +85,7 @@ class DoctorDetails(db.Model):
     __tablename__ = 'doctor_details'
 
     id = db.Column(db.Integer, primary_key=True)
-    clerkid = db.Column(db.String(36), db.ForeignKey('User.clerkid'), nullable=False)  # Linking to User.clerkid
+    clerkid = db.Column(db.String(36), db.ForeignKey('User.clerkid'), nullable=False)
     first_name = db.Column(db.String(80), nullable=False)
     last_name = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), nullable=False)
@@ -98,8 +98,10 @@ class DoctorDetails(db.Model):
     consultation_fee = db.Column(db.Float, nullable=False)
     available_days = db.Column(db.String(50), nullable=False)
     available_time = db.Column(db.String(50), nullable=False)
+    hospital_id = db.Column(db.Integer, db.ForeignKey('hospitals.id'), nullable=True)
 
-    user = db.relationship('User', back_populates='doctor_details')  # Relationship with User model
+    user = db.relationship('User', back_populates='doctor_details')
+    hospital = db.relationship('Hospital', back_populates='doctors')
 
 class Prescription(db.Model):
     __tablename__ = 'prescriptions'
