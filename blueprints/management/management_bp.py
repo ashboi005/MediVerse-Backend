@@ -5,7 +5,6 @@ from blueprints.management.models import (
     EmergencyReport, EnergyUsage, WaterUsage
 )
 from datetime import datetime, timedelta, timezone
-import uuid
 import calendar
 import os
 from twilio.rest import Client
@@ -48,30 +47,6 @@ def trigger_garbage_response(location):
         send_sms(emergency_contact_number, message_text)
     else:
         print("EMERGENCY_CONTACT_NUMBER environment variable not set.")
-
-# Shared Helper Function for Water Usage Data
-def get_water_usage_data(year, month):
-    session = db.session
-    try:
-        start_date = datetime(year, month, 1, tzinfo=IST)
-        end_date = start_date + timedelta(days=calendar.monthrange(year, month)[1])
-        
-        records = session.query(WaterUsage).filter(
-            WaterUsage.timestamp >= start_date.astimezone(timezone.utc),
-            WaterUsage.timestamp < end_date.astimezone(timezone.utc)
-        ).all()
-
-        return {
-            "total_usage_liters": sum(r.usage_liters for r in records),
-            "usage_records": [{
-                "date": r.timestamp.astimezone(IST).strftime("%Y-%m-%d"),
-                "usage_liters": r.usage_liters
-            } for r in records]
-        }
-    except Exception as e:
-        raise e
-    finally:
-        session.close()
 
 # ==================== Sensor Routes ====================
 @sensor_bp.route('/add_sensor', methods=['POST'])

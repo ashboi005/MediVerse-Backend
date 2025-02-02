@@ -129,7 +129,7 @@ def get_reports(clerkid):
 
 
 HEALTH_KEYWORDS = [
-    "fitness", "exercise", "diet", "wellness", "health", "nutrition",
+    "fitness", "exercise", "diet", "wellness", "health", "nutrition", "weight",
     "meditation", "yoga", "workout", "self-care", "sleep", "mental health", "weight loss", "healthy eating", "lifestyle", "stress management", "physical activity",
     "healthy living", "healthcare", "well-being", "mindfulness", "healthy habits", "health education", "health promotion", "health coaching", "health assessment",
     "health counseling", "health monitoring", "health planning", "health training", "health support", "health improvement", "health maintenance", "health enhancement",
