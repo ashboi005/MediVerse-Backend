@@ -10,8 +10,10 @@ from blueprints.doctor.doctor_bp import doctor_bp
 from blueprints.prescription.prescription_bp import prescription_bp
 from blueprints.appointment.appointment_bp import appointment_bp
 from blueprints.hospital.hospital_bp import hospital_bp
+from blueprints.management.management_bp import (parking_bp, garbage_sensor_bp,fire_sensor_bp, energy_usage_bp, water_usage_bp,sensor_bp)
 from models import Appointment
 from blueprints.hospital.models import Hospital
+from blueprints.management.models import (ParkingLot, Sensor, Garbage,EmergencyReport, EnergyUsage, WaterUsage)
 from datetime import datetime
 
 app = Flask(__name__)
@@ -26,6 +28,12 @@ app.register_blueprint(doctor_bp, url_prefix='/doctor')
 app.register_blueprint(prescription_bp, url_prefix='/prescription')
 app.register_blueprint(appointment_bp, url_prefix='/appointment')
 app.register_blueprint(hospital_bp,url_prefix='/hospital')
+app.register_blueprint(parking_bp, url_prefix='/parking')
+app.register_blueprint(garbage_sensor_bp, url_prefix='/garbage')
+app.register_blueprint(fire_sensor_bp, url_prefix='/fire')
+app.register_blueprint(energy_usage_bp, url_prefix='/energy')
+app.register_blueprint(water_usage_bp, url_prefix='/water')
+app.register_blueprint(sensor_bp,url_prefix='/sensor')
 
 # APScheduler setup
 scheduler = APScheduler()
