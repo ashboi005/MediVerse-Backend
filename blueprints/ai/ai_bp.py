@@ -127,16 +127,6 @@ def get_reports(clerkid):
 
     return jsonify({"reports": response_data}), 200
 
-
-HEALTH_KEYWORDS = [
-    "fitness", "exercise", "diet", "wellness", "health", "nutrition", "weight",
-    "meditation", "yoga", "workout", "self-care", "sleep", "mental health", "weight loss", "healthy eating", "lifestyle", "stress management", "physical activity",
-    "healthy living", "healthcare", "well-being", "mindfulness", "healthy habits", "health education", "health promotion", "health coaching", "health assessment",
-    "health counseling", "health monitoring", "health planning", "health training", "health support", "health improvement", "health maintenance", "health enhancement",
-    "health empowerment", "health awareness", "health guidance", "health supervision", "health management", "health care", "health advice", "health information",
-    "health consultation", "health checkup", "health screening", "health evaluation", "health examination", "health review", "health analysis", "health assessment",
-    "health diagnosis", "health prognosis", "health treatment", "health therapy", "health counseling", "health coaching", "health training", "health support"
-]
 @ai_bp.route('/routine', methods=['POST'])
 @swag_from({
     'summary': 'Generate a 10-day health-related routine',
@@ -210,10 +200,7 @@ def generate_routine():
     if not clerkid:
         return jsonify({'error': 'Clerk ID is required'}), 400
 
-    if not any(keyword in goal.lower() for keyword in HEALTH_KEYWORDS):
-        return jsonify({'error': 'Only health-related topics are supported for routine generation.'}), 400
-
-    query = f"generate me a 30 days plan for {goal} in md format without any extra description"
+    query = f"generate me a 30 days plan for {goal} in md format without any extra description. only answer the question if the goal is health or wellness related because this is for a hospital website, if its not health related then return that the goal is not health related."
 
     try:
         routine = routine_generator(query)
