@@ -78,7 +78,7 @@ def create_doctor(clerkid):
                     'consultation_fee': {'type': 'number'},
                     'available_days': {'type': 'string'},
                     'available_time': {'type': 'string'},
-                    'hospital_id': {'type': 'integer'}  # Added hospital_id
+                    'hospital_id': {'type': 'integer'}  
                 },
                 'required': [
                     'clerkid', 'first_name', 'last_name', 'email', 'phone_number', 'address',

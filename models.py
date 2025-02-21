@@ -119,11 +119,12 @@ class Appointment(db.Model):
     __tablename__ = 'appointments'
 
     id = db.Column(db.Integer, primary_key=True)
-    doctor_clerkid = db.Column(db.String(36), db.ForeignKey('User.clerkid'), nullable=False)  # Linking to Doctor's clerkid
-    patient_clerkid = db.Column(db.String(36), db.ForeignKey('User.clerkid'), nullable=False)  # Linking to Patient's clerkid
+    doctor_clerkid = db.Column(db.String(36), db.ForeignKey('User.clerkid'), nullable=False)  
+    patient_clerkid = db.Column(db.String(36), db.ForeignKey('User.clerkid'), nullable=False)  
     appointment_date = db.Column(db.DateTime, nullable=False)
     status = db.Column(db.String(15), nullable=False)
     text_field = db.Column(db.Text, nullable=True)
+    hospital_id = db.Column(db.Integer, db.ForeignKey('hospitals.id'), nullable=True)
 
 class Routine (db.Model):
     __tablename__ = 'routines'

@@ -257,3 +257,56 @@ def get_appointments(clerkid):
         })
 
     return jsonify(appointment_list), 200
+
+# Route to get all pending appointments
+@appointment_bp.route('/get-pending-appointments/<doctor_clerkid>', methods=['GET'])
+@swag_from({
+    'summary': 'Get all pending appointments for a specific doctor',
+    'tags': ['Appointment'],
+    'parameters': [
+        {
+            'name': 'doctor_clerkid',
+            'in': 'path',
+            'type': 'string',
+            'required': True,
+            'description': 'ClerkID of the doctor'
+        }
+    ],
+    'responses': {
+        200: {
+            'description': 'Pending appointments fetched successfully',
+            'examples': {
+                'application/json': [
+                    {
+                        'id': 1,
+                        'doctor_clerkid': '1234',
+                        'patient_clerkid': '5678',
+                        'appointment_date': '2023-10-01T12:00:00',
+                        'status': 'pending',
+                        'text_field': 'Initial consultation',
+                        'hospital_id': 1,
+                        'hospital_name': 'General Hospital'
+                    }
+                ]
+            }
+        }
+    }
+})
+def get_pending_appointments(doctor_clerkid):
+    appointments = Appointment.query.filter_by(status='pending', doctor_clerkid=doctor_clerkid).all()
+
+    appointment_list = []
+    for appointment in appointments:
+        hospital = Hospital.query.get(appointment.hospital_id)
+        appointment_list.append({
+            'id': appointment.id,
+            'doctor_clerkid': appointment.doctor_clerkid,
+            'patient_clerkid': appointment.patient_clerkid,
+            'appointment_date': appointment.appointment_date.isoformat(),
+            'status': appointment.status,
+            'text_field': appointment.text_field,
+            'hospital_id': appointment.hospital_id,
+            'hospital_name': hospital.name if hospital else None
+        })
+
+    return jsonify(appointment_list), 200
