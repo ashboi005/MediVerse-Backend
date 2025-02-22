@@ -2,7 +2,7 @@
 
 ### MediVerse: Revolutionizing Healthcare Communication
 
-Healthcare systems often struggle to streamline communication between patients and doctors. To address this challenge, our team, Cracked Nerds, developed MediVerse—a comprehensive Patient-Doctor communication system. Submitted for the BITS PILANI POSTMAN API Hackathon 4.0, this application is designed to simplify healthcare interactions through robust APIs and AI-powered features. Built with Flask for the backend and Next.js for the frontend, MediVerse ensures seamless and efficient user experiences.
+Healthcare systems often struggle to streamline communication between patients and doctors. To address this challenge, our team, Cracked Nerds, developed MediVerse—a comprehensive Patient-Doctor communication system. Submitted for DU Hacks 4.0, this application is designed to simplify healthcare interactions through robust APIs and AI-powered features. Built with Flask for the backend and Next.js for the frontend, MediVerse ensures seamless and efficient user experiences.
 
 ### **Team Members**
 
@@ -17,7 +17,7 @@ Healthcare systems often struggle to streamline communication between patients a
 
 - **Frontend GitHub Repository:** [https://github.com/sahilchabra09/MediVerse](https://github.com/sahilchabra09/MediVerse)
 - **Backend GitHub Repository:** [https://github.com/ashboi005/MediVerse-Backend](https://github.com/ashboi005/MediVerse-Backend)
-- **Postman Documentation:** [https://documenter.getpostman.com/view/38037470/2sAYQdjVSm](https://documenter.getpostman.com/view/38037470/2sAYQdjVSm)
+- **Postman Documentation (outdated):** [https://documenter.getpostman.com/view/38037470/2sAYQdjVSm](https://documenter.getpostman.com/view/38037470/2sAYQdjVSm)
 - **YouTube Showcase Video:** *(Link to be added)*
 
 
