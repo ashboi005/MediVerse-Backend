@@ -310,3 +310,4 @@ def get_pending_appointments(doctor_clerkid):
         })
 
     return jsonify(appointment_list), 200
+

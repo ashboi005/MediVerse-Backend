@@ -111,6 +111,7 @@ class Prescription(db.Model):
     patient_clerkid = db.Column(db.String(36), db.ForeignKey('User.clerkid'), nullable=False)  # Linking to Patient's clerkid
     prescription_date = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
     prescription_text = db.Column(db.Text, nullable=False)
+    hospital_id = db.Column(db.Integer, db.ForeignKey('hospitals.id'), nullable=True)
 
     doctor = db.relationship('User', foreign_keys=[doctor_clerkid])
     patient = db.relationship('User', foreign_keys=[patient_clerkid])
