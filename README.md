@@ -1,4 +1,5 @@
-###BACKEND DEPLOYED ON https://mediverse-backend.onrender.com
+###FRONTEND DEPLOYED ON https://medi-verse.vercel.app
+###BACKEND DEPLOYED ON https://mediverse-backend.onrender.com/apidocs
 
 ### MediVerse: Revolutionizing Healthcare Communication
 
@@ -8,8 +9,8 @@ Healthcare systems often struggle to streamline communication between patients a
 
 - **Ashwath Soni (me)**
 - **Sahil Chabra**
-- **Gurshabad Singh**
-- **Parth Kapoor**
+- **Harnoor Singh Arora**
+- **Tushar Dhingra**
 
 ### **Live Demo**
 
