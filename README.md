@@ -132,6 +132,12 @@ MediVerse stands out by combining traditional healthcare management with modern 
 3. **Expanded Deployment**: Scale the application to support multiple regions and languages.
 4. **Advanced Security Measures**: Strengthen data encryption and access control.
 
+Looking ahead, MediVerse aims to evolve into a comprehensive hospital management system that goes beyond patient-doctor communication. In this expanded vision, hospitals can sign up on our platform to manage their entire operational ecosystem. Not only will they be able to onboard and manage doctors efficiently, but they will also gain the ability to oversee key facilities such as parking, garbage management, fire alarm systems, and energy and water resources. This will be achieved through the integration of IoT sensors, which provide real-time monitoring and control over these essential services.
+
+The backend for this hospital management module has already been developed and deployed, demonstrating our technical capability and readiness to support large-scale operations. While we have successfully built and launched the backend infrastructure, the frontend for this module is still in progress. Once completed, hospitals will be able to manage everything from staff scheduling to facility maintenance through a unified, user-friendly interface.
+
+By extending our platform in this way, MediVerse will not only continue to enhance patient-doctor communication but also revolutionize overall hospital management, making healthcare systems more efficient, integrated, and responsive to both clinical and operational needs.
+
 MediVerse is more than a project—it’s a vision to make healthcare accessible, efficient, and patient-centric. Together, let’s revolutionize how healthcare communication happens.
 
 ---
